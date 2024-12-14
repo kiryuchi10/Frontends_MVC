@@ -10,6 +10,6 @@ public class TestController {
 
     @GetMapping
     public String testConnection() {
-        return "Backend is connected to the frontend!";
+        return "Backend is connected to the Frontend!";
     }
 }
