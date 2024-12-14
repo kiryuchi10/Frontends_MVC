@@ -1,9 +1,23 @@
 package io.JSTLMVCApp.fileuploadapp.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.JSTLMVCApp.model.User;
+import io.JSTLMVCApp.model.UserVO;
 
-public interface UserRepository extends JpaRepository <User,Long> {
-	User findByUserNameAndPassword(String username, String password);
+public class UserRepository {
+    private static List<UserVO> users = new ArrayList<>();
+
+    public UserVO save(UserVO user) {
+        user.setId((long) (users.size() + 1));
+        users.add(user);
+        return user;
+    }
+
+    public UserVO findByUsername(String username) {
+        return users.stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
 }
