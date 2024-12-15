@@ -1,30 +1,63 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/api/login', { username, password });
-            setMessage(response.data.message);
+            if (isSignUp) {
+                // Sign-Up Request
+                const response = await axios.post("/users/register", {
+                    username,
+                    password,
+                });
+                setMessage(response.data);
+                setIsSignUp(false); // Switch to login after successful registration
+            } else {
+                // Login Request
+                const response = await axios.post("/users/login", {
+                    username,
+                    password,
+                });
+                setMessage(`Welcome, ${response.data.username}!`);
+                if (response.status === 200) {
+                    window.location.href = "/upload"; // Redirect to File Upload page
+                }
+            }
         } catch (error) {
-            setMessage('Login failed');
+            setMessage("Error: " + (error.response?.data || "Server error"));
         }
     };
 
     return (
         <div>
-            <h1>Login</h1>
+            <h1>{isSignUp ? "Sign Up" : "Login"}</h1>
             <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
-                <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-                <button type="submit">Login</button>
+                <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                <button type="submit">{isSignUp ? "Sign Up" : "Login"}</button>
             </form>
             <p>{message}</p>
+            <button onClick={() => setIsSignUp(!isSignUp)}>
+                {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+            </button>
         </div>
     );
 };
